@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Shift Schedule April 2026 · Filter System + Full Calculations</title>
+ 
+ <!-- GLOBAL SIDEBAR CSS (same as admin.html) -->
+ <link rel="stylesheet" href="sidebar.css">
+ 
+ <style>
+ * {
+ box-sizing: border-box;
+ }
+
+ html { zoom: 0.80; }
+
+ body {
+ font-family: 'Segoe UI', 'Arial', sans-serif;
+ background: #f4f7fc;
+ margin: 0;
+ padding: 0;
+ color: #1e2b3c;
+ }
+
+ /* Hamburger Menu Button */
+ .hamburger-menu {
+ position: fixed;
+ top: 20px;
+ left: 20px;
+ z-index: 1000;
+ cursor: pointer;
+ background: #1e3a5f;
+ padding: 10px 8px;
+ border-radius: 8px;
+ box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+ transition: all 0.3s;
+ display: inline-block;
+ }
+
+ .hamburger-menu:hover {
+ background: #143048;
+ transform: scale(1.05);
+ }
+
+ .hamburger-line {
+ width: 25px;
+ height: 3px;
+ background: white;
+ margin: 5px 0;
+ border-radius: 2px;
+ transition: all 0.3s;
+ }
+
+ /* Main content wrapper - same as admin.html */
+ .main {
+ transition: margin-left 0.3s ease;
+ }
+
+ .main.shift {
+ margin-left: 250px;
+ }
+
+ /* ========== CUSTOM HORIZONTAL SCROLLBAR CONTROLLER ========== */
+ .scrollbar-controller-container {
+ width: 100%;
+ padding: 8px 20px;
+ background: white;
+ display: flex;
+ align-items: center;
+ gap: 15px;
+ }
+
+ .scrollbar-wrapper {
+ flex: 1;
+ height: 12px;
+ background: #e0e7ef;
+ border-radius: 6px;
+ position: relative;
+ cursor: pointer;
+ border: 1px solid #b0c4de;
+ }
+
+ .scrollbar-thumb {
+ width: 20%;
+ height: 100%;
+ background: #1e3a5f;
+ border-radius: 6px;
+ position: relative;
+ cursor: grab;
+ transition: background 0.2s;
+ border: 1px solid #2e5a88;
+ }
+
+ .scrollbar-thumb:hover {
+ background: #2a5a8c;
+ }
+
+ .scrollbar-thumb:active {
+ cursor: grabbing;
+ background: #143048;
+ }
+
+ .scrollbar-info {
+ font-size: 12px;
+ color: #4a627a;
+ white-space: nowrap;
+ min-width: 120px;
+ }
+
+ .scrollbar-info i {
+ font-style: normal;
+ font-weight: 600;
+ color: #1e3a5f;
+ }
+
+ /* Filter Panel Styles */
+ .filter-panel {
+ background: white;
+ border-radius: 12px;
+ padding: 20px;
+ margin-bottom: 20px;
+ margin-left: 70px;
+ box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+ border: 1px solid #cfdde9;
+ transition: margin-left 0.3s ease;
+ }
+
+ .main.shift .filter-panel {
+ margin-left: 0;
+ }
+
+ .filter-header {
+ display: flex;
+ align-items: center;
+ gap: 12px;
+ margin-bottom: 16px;
+ }
+
+ .filter-header h3 {
+ margin: 0;
+ color: #1e3a5f;
+ font-weight: 600;
+ font-size: 1.2rem;
+ }
+
+ .filter-badge {
+ background: #1e3a5f;
+ color: white;
+ padding: 4px 12px;
+ border-radius: 20px;
+ font-size: 12px;
+ font-weight: 500;
+ }
+
+ .filter-controls {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+ gap: 16px;
+ margin-bottom: 16px;
+ }
+
+ .filter-group {
+ display: flex;
+ flex-direction: column;
+ gap: 6px;
+ }
+
+ .filter-group label {
+ font-size: 12px;
+ font-weight: 600;
+ color: #4a627a;
+ text-transform: uppercase;
+ letter-spacing: 0.5px;
+ }
+
+ .filter-select, .filter-input {
+ padding: 8px 12px;
+ border: 1.5px solid #cfdde9;
+ border-radius: 6px;
+ font-size: 13px;
+ background: white;
+ color: #1e2b3c;
+ cursor: pointer;
+ transition: all 0.2s;
+ }
+
+ .filter-select:hover, .filter-input:hover {
+ border-color: #1e88e5;
+ }
+
+ .filter-select:focus, .filter-input:focus {
+ outline: none;
+ border-color: #1e3a5f;
+ box-shadow: 0 0 0 3px rgba(30,58,95,0.1);
+ }
+
+ .filter-actions {
+ display: flex;
+ gap: 10px;
+ align-items: center;
+ flex-wrap: wrap;
+ }
+
+ .btn {
+ padding: 8px 16px;
+ border-radius: 6px;
+ font-weight: 500;
+ font-size: 13px;
+ cursor: pointer;
+ transition: all 0.2s;
+ border: none;
+ }
+
+ .btn-primary {
+ background: #1e3a5f;
+ color: white;
+ border: 1px solid #2e5a88;
+ }
+
+ .btn-primary:hover {
+ background: #143048;
+ transform: translateY(-1px);
+ box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+ }
+
+ .btn-secondary {
+ background: white;
+ color: #1e3a5f;
+ border: 1.5px solid #cfdde9;
+ }
+
+ .btn-secondary:hover {
+ background: #f4f7fc;
+ border-color: #1e88e5;
+ }
+
+ .filter-stats {
+ margin-top: 12px;
+ padding: 10px;
+ background: #f0f4f8;
+ border-radius: 6px;
+ font-size: 13px;
+ color: #2c3e50;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ }
+
+ .active-filters {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 8px;
+ margin-top: 12px;
+ }
+
+ .filter-tag {
+ background: #e1e9f2;
+ color: #1e3a5f;
+ padding: 4px 10px;
+ border-radius: 16px;
+ font-size: 12px;
+ display: inline-flex;
+ align-items: center;
+ gap: 6px;
+ }
+
+ .filter-tag button {
+ background: none;
+ border: none;
+ color: #666;
+ cursor: pointer;
+ font-size: 14px;
+ padding: 0 4px;
+ }
+
+ .filter-tag button:hover {
+ color: #dc3545;
+ }
+
+ /* Month Picker Styles */
+ .month-picker-widget {
+ margin-top: 16px;
+ padding: 15px;
+ background: #f8fafc;
+ border-radius: 8px;
+ border: 1px solid #cfdde9;
+ }
+
+ .month-picker-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-bottom: 12px;
+ }
+
+ .month-picker-header h4 {
+ margin: 0;
+ color: #1e3a5f;
+ font-size: 14px;
+ font-weight: 600;
+ }
+
+ .month-picker-controls {
+ display: flex;
+ align-items: center;
+ gap: 15px;
+ }
+
+ .month-year-select {
+ display: flex;
+ gap: 10px;
+ }
+
+ .month-select, .year-select {
+ padding: 6px 10px;
+ border: 1.5px solid #cfdde9;
+ border-radius: 6px;
+ font-size: 13px;
+ background: white;
+ color: #1e2b3c;
+ cursor: pointer;
+ }
+
+ .month-select:hover, .year-select:hover {
+ border-color: #1e88e5;
+ }
+
+ .month-picker-btn {
+ background: #1e3a5f;
+ color: white;
+ border: none;
+ padding: 6px 15px;
+ border-radius: 6px;
+ cursor: pointer;
+ font-size: 12px;
+ font-weight: 500;
+ transition: all 0.2s;
+ }
+
+ .month-picker-btn:hover {
+ background: #143048;
+ }
+
+ .excel-container {
+ max-width: 100%;
+ overflow-x: auto;
+ background: white;
+ border-radius: 0 0 12px 12px;
+ box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+ padding: 0 0 20px 0;
+ border: 1px solid #cfdde9;
+ border-top: none;
+ margin-left: 70px;
+ transition: margin-left 0.3s ease;
+ }
+
+ .main.shift .excel-container {
+ margin-left: 0;
+ }
+
+ h2 {
+ margin: 0 0 8px 20px;
+ font-weight: 500;
+ color: #1e3a5f;
+ display: flex;
+ align-items: center;
+ gap: 12px;
+ }
+
+ h2 small {
+ font-size: 0.8rem;
+ font-weight: normal;
+ color: #4a627a;
+ margin-left: 10px;
+ }
+
+ table {
+ border-collapse: collapse;
+ min-width: 3200px;
+ table-layout: auto;
+ background: white;
+ font-size: 13px;
+ }
+
+ th, td {
+ border: 1px solid #b0c4de;
+ padding: 5px 4px;
+ text-align: center;
+ vertical-align: middle;
+ white-space: nowrap;
+ }
+
+ th {
+ background: #1e3a5f;
+ color: white;
+ font-weight: 600;
+ font-size: 12px;
+ border-color: #2e4a6b;
+ }
+
+ .section-header { background: #2a5a8c; }
+ .week-header { background: #3c6e9c; }
+ .day-header { background: #4a7eb3; }
+
+ .formula-cell {
+ background: #fcf8e7;
+ color: #1e3a5f;
+ font-family: 'Consolas', monospace;
+ font-weight: 500;
+ }
+
+ .avg-cell { background: #e6f2e6; font-weight: 600; }
+ .total-hc { background: #cbdde9; font-weight: 700; }
+
+ /* Custom Dropdown Styles */
+ .custom-dropdown {
+ position: relative;
+ width: 75px;
+ display: inline-block;
+ }
+
+ .custom-dropdown-select {
+ width: 100%;
+ padding: 3px 18px 3px 4px;
+ border: 1px solid #9ab3d0;
+ background: white;
+ font-size: 12px;
+ text-align: center;
+ border-radius: 2px;
+ font-family: 'Segoe UI', Arial, sans-serif;
+ cursor: pointer;
+ color: #1e2b3c;
+ background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><polygon points="0,3 10,3 5,8" fill="%23444"/></svg>');
+ background-repeat: no-repeat;
+ background-position: right 4px center;
+ background-size: 8px;
+ white-space: nowrap;
+ overflow: hidden;
+ text-overflow: ellipsis;
+ font-weight: 500;
+ }
+
+ /* Status color styles for dropdown select - UPDATED COLORS */
+ .custom-dropdown-select[data-value="M"] { background-color: #70AD47 !important; color: white !important; border-color: #5a8e38 !important; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><polygon points="0,3 10,3 5,8" fill="white"/></svg>') !important; }
+ .custom-dropdown-select[data-value="N"] { background-color: #646060 !important; color: white !important; border-color: #8c8c8c !important; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><polygon points="0,3 10,3 5,8" fill="white"/></svg>') !important; }
+ .custom-dropdown-select[data-value="OT(M)"] { background-color: #D9D9D9 !important; color: #1e2b3c !important; border-color: #bfbfbf !important; }
+ .custom-dropdown-select[data-value="OT(N)"] { background-color: #E2EFDA !important; color: #1e2b3c !important; border-color: #c5d9b8 !important; }
+ .custom-dropdown-select[data-value="PH(M)"] { background-color: #C6E0B4 !important; color: #1e2b3c !important; border-color: #a8c99a !important; }
+ .custom-dropdown-select[data-value="PH(N)"] { background-color: #C6E0B4 !important; color: #1e2b3c !important; border-color: #a8c99a !important; }
+ .custom-dropdown-select[data-value="MC"] { background-color: #9DC3E6 !important; color: #1e2b3c !important; border-color: #7dafd9 !important; }
+ .custom-dropdown-select[data-value="NA"] { background-color: #000000 !important; color: white !important; border-color: #163a59 !important; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><polygon points="0,3 10,3 5,8" fill="white"/></svg>') !important; }
+ .custom-dropdown-select[data-value="OFF"] { background-color: #1F4E79 !important; color: white !important; border-color: #333333 !important; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><polygon points="0,3 10,3 5,8" fill="white"/></svg>') !important; }
+ .custom-dropdown-select[data-value="REST"] { background-color: #FFF2CC !important; color: #1e2b3c !important; border-color: #ffe699 !important; }
+ .custom-dropdown-select[data-value="COT"] { background-color: #FFD966 !important; color: #1e2b3c !important; border-color: #ffcc33 !important; }
+ .custom-dropdown-select[data-value="AL"] { background-color: #F8CBAD !important; color: #1e2b3c !important; border-color: #f4b084 !important; }
+ .custom-dropdown-select[data-value="1st AL"] { background-color: #F4CCCC !important; color: #1e2b3c !important; border-color: #eaaaaa !important; }
+ .custom-dropdown-select[data-value="2nd AL"] { background-color: #F4B6B6 !important; color: #1e2b3c !important; border-color: #e88e8e !important; }
+ .custom-dropdown-select[data-value="EL"] { background-color: #FF0000 !important; color: white !important; border-color: #cc0000 !important; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><polygon points="0,3 10,3 5,8" fill="white"/></svg>') !important; }
+ .custom-dropdown-select[data-value="1st EL"] { background-color: #FF0000 !important; color: white !important; border-color: #cc0000 !important; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><polygon points="0,3 10,3 5,8" fill="white"/></svg>') !important; }
+ .custom-dropdown-select[data-value="2nd EL"] { background-color: #C00000 !important; color: white !important; border-color: #990000 !important; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><polygon points="0,3 10,3 5,8" fill="white"/></svg>') !important; }
+
+ .custom-dropdown-options {
+ position: absolute;
+ top: 100%;
+ left: 0;
+ right: 0;
+ background: white;
+ border: 1px solid #9ab3d0;
+ border-top: none;
+ border-radius: 0 0 4px 4px;
+ max-height: 115px;
+ overflow-y: auto;
+ z-index: 1001;
+ display: none;
+ box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+ 
+ /* Firefox scrollbar styling */
+ scrollbar-width: thin;
+ scrollbar-color: #a0b8ce #e8eef5;
+ }
+
+ /* Webkit browsers (Chrome, Edge, Safari) - Thin scrollbar */
+ .custom-dropdown-options::-webkit-scrollbar {
+ width: 6px;
+ }
+
+ .custom-dropdown-options::-webkit-scrollbar-track {
+ background: #e8eef5;
+ border-radius: 0 0 4px 0;
+ }
+
+ .custom-dropdown-options::-webkit-scrollbar-thumb {
+ background: #a0b8ce;
+ border-radius: 10px;
+ transition: background 0.2s;
+ }
+
+ .custom-dropdown-options::-webkit-scrollbar-thumb:hover {
+ background: #7a9bb8;
+ }
+
+ .custom-dropdown.open .custom-dropdown-options {
+ display: block;
+ }
+
+ .custom-dropdown-option {
+ padding: 4px 4px;
+ font-size: 12px;
+ text-align: center;
+ cursor: pointer;
+ background: white;
+ color: #1e2b3c;
+ }
+
+ /* Option colors in dropdown - UPDATED COLORS */
+ .custom-dropdown-option[data-value="M"] { background-color: #70AD47 !important; color: white !important; }
+ .custom-dropdown-option[data-value="N"] { background-color: #A6A6A6 !important; color: white !important; }
+ .custom-dropdown-option[data-value="OT(M)"] { background-color: #D9D9D9 !important; color: #1e2b3c !important; }
+ .custom-dropdown-option[data-value="OT(N)"] { background-color: #E2EFDA !important; color: #1e2b3c !important; }
+ .custom-dropdown-option[data-value="PH(M)"] { background-color: #C6E0B4 !important; color: #1e2b3c !important; }
+ .custom-dropdown-option[data-value="PH(N)"] { background-color: #C6E0B4 !important; color: #1e2b3c !important; }
+ .custom-dropdown-option[data-value="MC"] { background-color: #9DC3E6 !important; color: #1e2b3c !important; }
+ .custom-dropdown-option[data-value="NA"] { background-color: #000000 !important; color: white !important; }
+ .custom-dropdown-option[data-value="OFF"] { background-color: #1F4E79  !important; color: white !important; }
+ .custom-dropdown-option[data-value="REST"] { background-color: #FFF2CC !important; color: #1e2b3c !important; }
+ .custom-dropdown-option[data-value="COT"] { background-color: #FFD966 !important; color: #1e2b3c !important; }
+ .custom-dropdown-option[data-value="AL"] { background-color: #F8CBAD !important; color: #1e2b3c !important; }
+ .custom-dropdown-option[data-value="1st AL"] { background-color: #F4CCCC !important; color: #1e2b3c !important; }
+ .custom-dropdown-option[data-value="2nd AL"] { background-color: #F4B6B6 !important; color: #1e2b3c !important; }
+ .custom-dropdown-option[data-value="EL"] { background-color: #FF0000 !important; color: white !important; }
+ .custom-dropdown-option[data-value="1st EL"] { background-color: #FF0000 !important; color: white !important; }
+ .custom-dropdown-option[data-value="2nd EL"] { background-color: #C00000 !important; color: white !important; }
+
+ /* Status Count Table First Column Colors */
+ #statusSection tr td:first-child,
+ #statusSection tr td:nth-child(4) {
+ font-weight: 500;
+ }
+
+ /* Color the status label column based on the status code */
+ #statusSection tr td:nth-child(4) {
+ background-color: #e1e9f2;
+ }
+
+ .custom-dropdown-option:hover {
+ opacity: 0.85;
+ filter: brightness(1.1);
+ }
+
+ .custom-dropdown-option.selected {
+ outline: 2px solid #1e3a5f;
+ outline-offset: -1px;
+ }
+
+ .row-hidden {
+ display: none;
+ }
+
+ .legend-note {
+ margin: 16px 20px 4px;
+ margin-left: 90px;
+ display: flex;
+ gap: 20px;
+ flex-wrap: wrap;
+ font-size: 12px;
+ color: #2c3e50;
+ transition: margin-left 0.3s ease;
+ }
+
+ .main.shift .legend-note {
+ margin-left: 20px;
+ }
+
+ .badge {
+ background: #eef2f7;
+ padding: 4px 10px;
+ border-radius: 20px;
+ border-left: 4px solid #1e3a5f;
+ }
+
+ .view-toggle {
+ display: flex;
+ gap: 10px;
+ margin-left: auto;
+ }
+
+ .quick-filter-group {
+ display: flex;
+ gap: 8px;
+ flex-wrap: wrap;
+ margin-bottom: 12px;
+ }
+
+ .quick-filter-btn {
+ padding: 4px 12px;
+ background: white;
+ border: 1px solid #cfdde9;
+ border-radius: 16px;
+ font-size: 12px;
+ cursor: pointer;
+ transition: all 0.2s;
+ }
+
+ .quick-filter-btn:hover {
+ background: #1e3a5f;
+ color: white;
+ border-color: #1e3a5f;
+ }
+ </style>
+</head>
+<body>
+
+<!-- SIDEBAR (same structure as admin.html) -->
+<div class="sidebar" id="sidebar">
+ <h2>AMS</h2>
+ <a href="admin.html">Dashboard</a>
+ <a href="attendance.html" class="active">Attendance</a>
+ <a href="employees.html">Employees</a>
+ <a href="#">Reports</a>
+ <a href="#" class="logout" onclick="logout()">Logout</a>
+</div>
+
+<!-- MAIN CONTENT WRAPPER (same as admin.html) -->
+<div class="main" id="main">
+
+ <!-- Hamburger Menu Button (3 lines) - same as admin.html menu-btn -->
+ <div class="hamburger-menu" onclick="toggleSidebar()">
+ <div class="hamburger-line"></div>
+ <div class="hamburger-line"></div>
+ <div class="hamburger-line"></div>
+ </div>
+
+ <!-- Advanced Filter Panel -->
+ <div class="filter-panel">
+ <div class="filter-header">
+ <h3>🔍 Advanced Filter System</h3>
+ <span class="filter-badge" id="rowCount">23 Employees</span>
+ <div class="view-toggle">
+ <button class="btn btn-secondary" onclick="toggleAllRows(true)">👁 Show All</button>
+ <button class="btn btn-secondary" onclick="toggleAllRows(false)">👁‍🗨 Hide All</button>
+ </div>
+ </div>
+
+ <div class="filter-controls">
+ <div class="filter-group">
+ <label>👤 Shift Type</label>
+ <select id="filterShift" class="filter-select">
+ <option value="">All Shifts</option>
+ <option value="A">Shift A</option>
+ <option value="B">Shift B</option>
+ <option value="G">Shift G</option>
+ <option value="Normal">Normal Shift</option>
+ </select>
+ </div>
+
+ <div class="filter-group">
+ <label>📅 Day Status Filter</label>
+ <select id="filterStatus" class="filter-select">
+ <option value="">No Day Filter</option>
+ <option value="M">Morning (M)</option>
+ <option value="N">Night (N)</option>
+ <option value="OT(M)">OT Morning</option>
+ <option value="OT(N)">OT Night</option>
+ <option value="AL">Annual Leave</option>
+ <option value="MC">Medical Leave</option>
+ <option value="OFF">Off Day</option>
+ <option value="REST">Rest Day</option>
+ </select>
+ </div>
+
+ <div class="filter-group">
+ <label>🔎 Search Employee</label>
+ <input type="text" id="searchEmployee" class="filter-input" placeholder="Name or Code...">
+ </div>
+
+ <div class="filter-group">
+ <label>📊 OT% Range (Any Week)</label>
+ <select id="filterOT" class="filter-select">
+ <option value="">All OT%</option>
+ <option value="high">High OT (>50%)</option>
+ <option value="medium">Medium OT (25-50%)</option>
+ <option value="low">Low OT (<25%)</option>
+ <option value="zero">No OT (0%)</option>
+ </select>
+ </div>
+ </div>
+
+ <!-- Month Picker Widget -->
+ <div class="month-picker-widget">
+ <div class="month-picker-header">
+ <h4>📅 Select Month</h4>
+ <div class="month-picker-controls">
+ <div class="month-year-select">
+ <select id="monthSelect" class="month-select">
+ <option value="0">January</option>
+ <option value="1">February</option>
+ <option value="2">March</option>
+ <option value="3" selected>April</option>
+ <option value="4">May</option>
+ <option value="5">June</option>
+ <option value="6">July</option>
+ <option value="7">August</option>
+ <option value="8">September</option>
+ <option value="9">October</option>
+ <option value="10">November</option>
+ <option value="11">December</option>
+ </select>
+ <select id="yearSelect" class="year-select">
+ <option value="2024">2024</option>
+ <option value="2025">2025</option>
+ <option value="2026" selected>2026</option>
+ <option value="2027">2027</option>
+ <option value="2028">2028</option>
+ </select>
+ </div>
+ <button class="month-picker-btn" onclick="updateScheduleMonth()">Apply Month</button>
+ </div>
+ </div>
+ </div>
+
+ <div class="quick-filter-group">
+ <span style="font-size:12px; color:#4a627a; font-weight:600;">Quick Filters:</span>
+ <button class="quick-filter-btn" onclick="quickFilter('active')">✅ Active Employees</button>
+ <button class="quick-filter-btn" onclick="quickFilter('onLeave')">🏖 On Leave (Any Day)</button>
+ <button class="quick-filter-btn" onclick="quickFilter('nightShift')">🌙 Night Shift (B)</button>
+ <button class="quick-filter-btn" onclick="quickFilter('morningShift')">☀️ Morning Shift (A)</button>
+ <button class="quick-filter-btn" onclick="quickFilter('hasOT')">⏰ Has Overtime</button>
+ </div>
+
+ <div class="filter-actions">
+ <button class="btn btn-primary" onclick="applyFilters()">🔍 Apply Filters</button>
+ <button class="btn btn-secondary" onclick="clearAllFilters()">🔄 Clear All Filters</button>
+ <button class="btn btn-secondary" onclick="exportFilteredData()">📊 Export Filtered View</button>
+ <button class="btn btn-secondary" onclick="recalcFormulas()">🔄 Recalculate All</button>
+ </div>
+
+ <div class="active-filters" id="activeFilters"></div>
+
+ <div class="filter-stats">
+ <span id="filterStats">Showing all 23 employees</span>
+ <span id="quickStats">📈 Avg OT: 0% | 👥 Active: 23</span>
+ </div>
+ </div>
+
+ <!-- Legend -->
+ <div class="legend-note">
+ <span class="badge">🔽 Dropdown: M, N, OT(M), OT(N), COT, AL, 1st/2nd AL, MC, EL, PH(M/N), OFF, REST, NA</span>
+ <span class="badge">📊 OT% = (OT(M)+OT(N)+COT)/4 · Planned vs Actual</span>
+ <span class="badge">👥 Status tables auto-update with COUNTIF</span>
+ </div>
+
+ <!-- ========== CUSTOM HORIZONTAL SCROLLBAR CONTROLLER ========== -->
+ <div class="scrollbar-controller-container" style="margin-left: 70px; width: calc(100% - 70px);">
+ <div class="scrollbar-wrapper" id="customScrollbar">
+ <div class="scrollbar-thumb" id="scrollbarThumb"></div>
+ </div>
+ <div class="scrollbar-info">
+ <span id="scrollPosition">0</span> / <span id="maxScroll">3200</span> px
+ </div>
+ </div>
+
+ <!-- Main Excel Container -->
+ <div class="excel-container" id="excelContainer">
+ <table id="shiftTable">
+ <thead>
+ <!-- Row 1: Main Title spanning all columns -->
+ <tr>
+ <th colspan="4" style="background:#1e3a5f;"></th>
+ <th colspan="40" style="background:#1e3a5f;" id="mainTitle">Shiftly Planning on April 2026</th>
+ </tr>
+ 
+ <!-- Row 2: Week Headers (WW14, WW15, etc.) - ONLY over day columns, NOT over Plan%/Act% -->
+ <tr>
+ <th colspan="4" style="background:#1e3a5f;"></th>
+ <!-- WW14: 5 days -->
+ <th colspan="5" class="week-header" id="week14Header">WW14</th>
+ <th colspan="2" style="background:#1e3a5f;"></th>
+ <!-- WW15: 7 days -->
+ <th colspan="7" class="week-header" id="week15Header">WW15</th>
+ <th colspan="2" style="background:#1e3a5f;"></th>
+ <!-- WW16: 7 days -->
+ <th colspan="7" class="week-header" id="week16Header">WW16</th>
+ <th colspan="2" style="background:#1e3a5f;"></th>
+ <!-- WW17: 7 days -->
+ <th colspan="7" class="week-header" id="week17Header">WW17</th>
+ <th colspan="2" style="background:#1e3a5f;"></th>
+ <!-- WW18: 4 days -->
+ <th colspan="4" class="week-header" id="week18Header">WW18</th>
+ <th colspan="2" style="background:#1e3a5f;"></th>
+ </tr>
+ 
+ <!-- Row 3: Day headers (1-30) and formula labels -->
+ <tr>
+ <th colspan="4" style="background:#1e3a5f;"></th>
+ <!-- WW14 days -->
+ <th class="day-header" id="d1">1</th>
+ <th class="day-header" id="d2">2</th>
+ <th class="day-header" id="d3">3</th>
+ <th class="day-header" id="d4">4</th>
+ <th class="day-header" id="d5">5</th>
+ <th class="day-header">Total % Planned OT per WH</th>
+ <th class="day-header">Total % Actual OT per WH</th>
+ <!-- WW15 days -->
+ <th class="day-header" id="d6">6</th>
+ <th class="day-header" id="d7">7</th>
+ <th class="day-header" id="d8">8</th>
+ <th class="day-header" id="d9">9</th>
+ <th class="day-header" id="d10">10</th>
+ <th class="day-header" id="d11">11</th>
+ <th class="day-header" id="d12">12</th>
+ <th class="day-header">Total % Planned OT per WH</th>
+ <th class="day-header">Total % Actual OT per WH</th>
+ <!-- WW16 days -->
+ <th class="day-header" id="d13">13</th>
+ <th class="day-header" id="d14">14</th>
+ <th class="day-header" id="d15">15</th>
+ <th class="day-header" id="d16">16</th>
+ <th class="day-header" id="d17">17</th>
+ <th class="day-header" id="d18">18</th>
+ <th class="day-header" id="d19">19</th>
+ <th class="day-header">Total % Planned OT per WH</th>
+ <th class="day-header">Total % Actual OT per WH</th>
+ <!-- WW17 days -->
+ <th class="day-header" id="d20">20</th>
+ <th class="day-header" id="d21">21</th>
+ <th class="day-header" id="d22">22</th>
+ <th class="day-header" id="d23">23</th>
+ <th class="day-header" id="d24">24</th>
+ <th class="day-header" id="d25">25</th>
+ <th class="day-header" id="d26">26</th>
+ <th class="day-header">Total % Planned OT per WH</th>
+ <th class="day-header">Total % Actual OT per WH</th>
+ <!-- WW18 days -->
+ <th class="day-header" id="d27">27</th>
+ <th class="day-header" id="d28">28</th>
+ <th class="day-header" id="d29">29</th>
+ <th class="day-header" id="d30">30</th>
+ <th class="day-header">Total % Planned OT per WH</th>
+ <th class="day-header">Total % Actual OT per WH</th>
+ </tr>
+ 
+ <!-- Row 4: Column labels for employee data -->
+ <tr>
+ <th>No.</th>
+ <th>Employee Code</th>
+ <th>Employee Name</th>
+ <th>Shift</th>
+ <!-- WW14 -->
+ <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>Plan%</th><th>Act%</th>
+ <!-- WW15 -->
+ <th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>Plan%</th><th>Act%</th>
+ <!-- WW16 -->
+ <th>13</th><th>14</th><th>15</th><th>16</th><th>17</th><th>18</th><th>19</th><th>Plan%</th><th>Act%</th>
+ <!-- WW17 -->
+ <th>20</th><th>21</th><th>22</th><th>23</th><th>24</th><th>25</th><th>26</th><th>Plan%</th><th>Act%</th>
+ <!-- WW18 -->
+ <th>27</th><th>28</th><th>29</th><th>30</th><th>Plan%</th><th>Act%</th>
+ </tr>
+ </thead>
+ <tbody id="scheduleBody"></tbody>
+ <tbody id="averageRow"></tbody>
+ <tbody id="statusSection"></tbody>
+ </table>
+ </div>
+</div>
+
+<script>
+ (function(){
+ "use strict";
+
+ // SIDEBAR TOGGLE (same as admin.html)
+ window.toggleSidebar = function() {
+ document.getElementById("sidebar").classList.toggle("active");
+ document.getElementById("main").classList.toggle("shift");
+ };
+
+ // LOGOUT FUNCTION (same as admin.html)
+ window.logout = function() {
+ window.location.href = "index.html";
+ };
+
+ // Highlight active sidebar link
+ const links = document.querySelectorAll(".sidebar a");
+ const current = window.location.pathname.split("/").pop() || "shift-schedule.html";
+ links.forEach(link => {
+ if (link.getAttribute("href") === current) {
+ link.classList.add("active");
+ }
+ });
+
+ // ========== CUSTOM SCROLLBAR CONTROLLER ==========
+ const excelContainer = document.getElementById('excelContainer');
+ const scrollbarWrapper = document.getElementById('customScrollbar');
+ const scrollbarThumb = document.getElementById('scrollbarThumb');
+ const scrollPositionSpan = document.getElementById('scrollPosition');
+ const maxScrollSpan = document.getElementById('maxScroll');
+
+ let isDragging = false;
+ let startX, startScrollLeft;
+
+ function updateScrollbarFromContainer() {
+ const container = excelContainer;
+ const scrollWidth = container.scrollWidth - container.clientWidth;
+ const thumbWidth = Math.max(20, (container.clientWidth / container.scrollWidth) * 100);
+ scrollbarThumb.style.width = thumbWidth + '%';
+ 
+ const thumbLeft = scrollWidth > 0 ? (container.scrollLeft / scrollWidth) * (100 - thumbWidth) : 0;
+ scrollbarThumb.style.left = thumbLeft + '%';
+ 
+ scrollPositionSpan.textContent = Math.round(container.scrollLeft);
+ maxScrollSpan.textContent = Math.round(scrollWidth);
+ }
+
+ function updateContainerFromThumb(thumbPercent) {
+ const container = excelContainer;
+ const scrollWidth = container.scrollWidth - container.clientWidth;
+ container.scrollLeft = (thumbPercent / 100) * scrollWidth;
+ }
+
+ // Sync scrollbar with container scroll
+ excelContainer.addEventListener('scroll', updateScrollbarFromContainer);
+ 
+ // Window resize update
+ window.addEventListener('resize', updateScrollbarFromContainer);
+
+ // Thumb dragging
+ scrollbarThumb.addEventListener('mousedown', (e) => {
+ isDragging = true;
+ startX = e.clientX;
+ startScrollLeft = excelContainer.scrollLeft;
+ scrollbarThumb.style.cursor = 'grabbing';
+ e.preventDefault();
+ });
+
+ document.addEventListener('mousemove', (e) => {
+ if (!isDragging) return;
+ 
+ const wrapperRect = scrollbarWrapper.getBoundingClientRect();
+ const thumbRect = scrollbarThumb.getBoundingClientRect();
+ const deltaX = e.clientX - startX;
+ const wrapperWidth = wrapperRect.width - thumbRect.width;
+ 
+ if (wrapperWidth > 0) {
+ const movePercent = (deltaX / wrapperWidth) * 100;
+ const container = excelContainer;
+ const scrollWidth = container.scrollWidth - container.clientWidth;
+ container.scrollLeft = startScrollLeft + (movePercent / 100) * scrollWidth;
+ }
+ });
+
+ document.addEventListener('mouseup', () => {
+ if (isDragging) {
+ isDragging = false;
+ scrollbarThumb.style.cursor = 'grab';
+ }
+ });
+
+ // Click on wrapper jumps to position
+ scrollbarWrapper.addEventListener('click', (e) => {
+ if (e.target === scrollbarThumb) return;
+ 
+ const wrapperRect = scrollbarWrapper.getBoundingClientRect();
+ const clickX = e.clientX - wrapperRect.left;
+ const wrapperWidth = wrapperRect.width;
+ const percent = (clickX / wrapperWidth) * 100;
+ 
+ const container = excelContainer;
+ const scrollWidth = container.scrollWidth - container.clientWidth;
+ container.scrollLeft = (percent / 100) * scrollWidth;
+ });
+
+ // Initial update
+ setTimeout(updateScrollbarFromContainer, 100);
+
+ // Current selected month/year
+ let currentMonth = 3; // April (0-indexed)
+ let currentYear = 2026;
+
+ // Month picker function
+ window.updateScheduleMonth = function() {
+ currentMonth = parseInt(document.getElementById('monthSelect').value);
+ currentYear = parseInt(document.getElementById('yearSelect').value);
+ 
+ const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+ 
+ // Update main title
+ document.getElementById('mainTitle').textContent = `Shiftly Planning on ${months[currentMonth]} ${currentYear}`;
+ 
+ // Get first day of month
+ const firstDay = new Date(currentYear, currentMonth, 1);
+ const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+ 
+ // Update day headers
+ for (let i = 1; i <= 30; i++) {
+ const dayEl = document.getElementById(`d${i}`);
+ if (dayEl) {
+ if (i <= daysInMonth) {
+ const date = new Date(currentYear, currentMonth, i);
+ const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+ dayEl.textContent = `${weekdays[date.getDay()]} ${i}`;
+ } else {
+ dayEl.textContent = '-';
+ }
+ }
+ }
+ 
+ // Update week headers with week numbers
+ updateWeekHeaders();
+ 
+ // Update scrollbar after content change
+ setTimeout(updateScrollbarFromContainer, 100);
+ 
+ console.log(`Schedule updated to ${months[currentMonth]} ${currentYear}`);
+ };
+
+ function updateWeekHeaders() {
+ const firstDay = new Date(currentYear, currentMonth, 1);
+ const startWeek = getWeekNumber(firstDay);
+ 
+ const week14 = document.getElementById('week14Header');
+ const week15 = document.getElementById('week15Header');
+ const week16 = document.getElementById('week16Header');
+ const week17 = document.getElementById('week17Header');
+ const week18 = document.getElementById('week18Header');
+ 
+ if (week14) week14.textContent = `WW${startWeek}`;
+ if (week15) week15.textContent = `WW${startWeek + 1}`;
+ if (week16) week16.textContent = `WW${startWeek + 2}`;
+ if (week17) week17.textContent = `WW${startWeek + 3}`;
+ if (week18) week18.textContent = `WW${startWeek + 4}`;
+ }
+
+ function getWeekNumber(date) {
+ const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+ const dayNum = d.getUTCDay() || 7;
+ d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+ const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+ return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+ }
+
+ // Shift options
+ const SHIFT_OPTIONS = [
+ "M", "N", "OT(M)", "OT(N)", "COT",
+ "AL", "1st AL", "2nd AL",
+ "MC", "EL", "1st EL", "2nd EL",
+ "PH(M)", "PH(N)",
+ "OFF", "REST", "NA"
+ ];
+
+ // Employee data
+ const employees = [
+ { no:1, code:"ORI0036", name:"MUHAMMAD SHAHRUL IZHAM BIN RUSLAN", shift:"A",
+ w1:["M","M","M","OFF","REST"], w2:["N","N","N","N","N","OFF","REST"], w3:["N","N","N","N","N","OFF","REST"], w4:["M","M","M","M","M","OFF","REST"], w5:["M","M","M","M"] },
+ { no:2, code:"ORI0484", name:"DINESH A/L RAVINDRAN", shift:"A",
+ w1:["M","M","M","OFF","REST"], w2:["N","N","N","N","N","OFF","REST"], w3:["N","N","N","N","N","OFF","REST"], w4:["M","M","M","M","M","OFF","REST"], w5:["M","M","M","M"] },
+ { no:3, code:"ORI0394", name:"MOHAMMAD LUKMAN BIN HAMZAH", shift:"A",
+ w1:["M","M","M","OFF","REST"], w2:["N","N","N","N","N","OFF","REST"], w3:["N","N","N","N","N","OFF","REST"], w4:["M","M","M","M","M","OFF","REST"], w5:["M","M","M","M"] },
+ { no:4, code:"ORI0543", name:"MOHD HAMIZAN BIN FADZIL", shift:"A",
+ w1:["M","M","M","OFF","REST"], w2:["N","N","N","N","N","OFF","REST"], w3:["N","N","N","N","N","OFF","REST"], w4:["M","M","M","M","M","OFF","REST"], w5:["M","M","M","M"] },
+ { no:5, code:"ORI0327", name:"MUHAMMAD ALIF AZIZ BIN MUZER", shift:"A",
+ w1:["M","M","M","OFF","REST"], w2:["N","N","N","N","N","OFF","REST"], w3:["N","N","N","N","N","OFF","REST"], w4:["M","M","M","M","M","OFF","REST"], w5:["M","M","M","M"] },
+ { no:6, code:"ORI0220", name:"AMIR SHARIFFUDIN BIN JAMALUDIN", shift:"A",
+ w1:["M","M","M","OFF","REST"], w2:["N","N","N","N","N","OFF","REST"], w3:["N","N","N","N","N","OFF","REST"], w4:["M","M","M","M","M","OFF","REST"], w5:["M","M","M","M"] },
+ { no:7, code:"ORI0537", name:"ABD SYUKOR BIN CASSIM", shift:"A",
+ w1:["M","M","M","OFF","REST"], w2:["N","N","N","N","N","OFF","REST"], w3:["N","N","N","N","N","OFF","REST"], w4:["M","M","M","M","M","OFF","REST"], w5:["M","M","M","M"] },
+ { no:8, code:"ORI0439", name:"MOHAMAD KHAIRI BIN MOHD ZAKARIA (Resigned 6Apr 24H)", shift:"A",
+ w1:["AL","AL","AL","OFF","REST"], w2:["N","N","N","N","N","OFF","REST"], w3:["N","N","N","N","N","OFF","REST"], w4:["N","N","N","N","N","OFF","REST"], w5:["M","M","M","M"] },
+ { no:9, code:"ORI0037", name:"MOHAMAD FARIS IKHWAN BIN MOHD FADLI", shift:"B",
+ w1:["N","N","N","OFF","REST"], w2:["M","M","M","M","M","OFF","REST"], w3:["M","M","M","M","M","OFF","REST"], w4:["N","N","N","N","N","OFF","REST"], w5:["N","N","N","N"] },
+ { no:10, code:"0RI 0406", name:"MUHAMAD HAMIRUL HAKIM BIN HAMZAH", shift:"B",
+ w1:["N","N","N","OFF","REST"], w2:["M","M","M","M","M","OFF","REST"], w3:["M","M","M","M","M","OFF","REST"], w4:["N","N","N","N","N","OFF","REST"], w5:["N","N","N","N"] },
+ { no:11, code:"ORI0351", name:"MOHAMAD ZULHILMI BIN MOHD SOBRI", shift:"B",
+ w1:["AL","AL","AL","OFF","REST"], w2:["M","M","M","M","M","OFF","REST"], w3:["M","M","M","M","M","OFF","REST"], w4:["N","N","N","N","N","OFF","REST"], w5:["N","N","N","N"] },
+ { no:12, code:"ORI0246", name:"MOHAMAD NAZMI BIN MOHD MANSHOR", shift:"B",
+ w1:["N","N","N","OFF","REST"], w2:["M","M","M","M","M","OFF","REST"], w3:["AL","AL","M","M","M","OFF","REST"], w4:["N","N","N","N","N","OFF","REST"], w5:["N","N","N","N"] },
+ { no:13, code:"ORI0405", name:"MUHAMMAD NAIM BIN IBRAHIM", shift:"B",
+ w1:["N","N","N","OFF","REST"], w2:["M","M","M","M","M","OFF","REST"], w3:["M","M","M","M","M","OFF","REST"], w4:["N","N","N","N","N","OFF","REST"], w5:["N","N","N","N"] },
+ { no:14, code:"ORI0377", name:"MUHAMMAD IRFAN FAUZAN BIN AKHMAD AZNAN", shift:"B",
+ w1:["N","N","N","OFF","REST"], w2:["M","M","M","M","M","OFF","REST"], w3:["M","M","M","M","M","OFF","REST"], w4:["N","N","N","N","N","OFF","REST"], w5:["N","N","N","N"] },
+ { no:15, code:"ORI0361", name:"MUHAMMAD AMIR BIN AZHAR", shift:"B",
+ w1:["N","N","N","OFF","REST"], w2:["M","M","M","2nd AL","M","OFF","REST"], w3:["M","M","M","M","M","OFF","REST"], w4:["N","N","N","N","N","OFF","REST"], w5:["N","N","N","N"] },
+ { no:16, code:"ORI0483", name:"VIGNASH PALANESAMY", shift:"B",
+ w1:["N","N","N","OFF","REST"], w2:["M","M","M","M","M","OFF","REST"], w3:["M","M","M","M","M","OFF","REST"], w4:["N","N","N","N","AL","OFF","REST"], w5:["N","N","N","N"] },
+ { no:17, code:"ORI0240", name:"PRADEEPPARAJ A/L MUNIANDY", shift:"G",
+ w1:["MC","M","OT(M)","OFF","REST"], w2:["M","M","M","M","OFF","OFF","REST"], w3:["M","M","M","M","OFF","OFF","REST"], w4:["M","M","M","M","OFF","OFF","REST"], w5:["M","M","M","M"] },
+ { no:18, code:"ORI0500", name:"NURSYAFIKA BINTI MOHD NAPIS", shift:"G",
+ w1:["M","M","OT(M)","OFF","REST"], w2:["M","M","M","M","OFF","OFF","REST"], w3:["M","M","M","M","OFF","OFF","REST"], w4:["M","M","M","M","OFF","OFF","REST"], w5:["M","M","M","M"] },
+ { no:19, code:"ORI0393", name:"AHMAD SUHAIB BIN AHMAD ZUDI", shift:"G",
+ w1:["M","M","OFF","OFF","REST"], w2:["M","M","M","M","OFF","OFF","REST"], w3:["M","M","M","M","OFF","OFF","REST"], w4:["M","M","M","M","OFF","OFF","REST"], w5:["M","M","M","M"] },
+ { no:20, code:"ORI0170", name:"MUHAMMAD NASIRUDIN BIN TAJUDIN", shift:"G",
+ w1:["M","1st AL","OFF","OFF","REST"], w2:["M","M","M","AL","OFF","OFF","REST"], w3:["M","M","M","M","OFF","OFF","REST"], w4:["M","M","M","M","OFF","OFF","REST"], w5:["M","M","M","M"] },
+ { no:21, code:"ORI0275", name:"MUHAMAD ZULFAQAR BIN YUSOFF", shift:"G",
+ w1:["M","M","OFF","OFF","REST"], w2:["M","M","M","AL","OFF","OFF","REST"], w3:["M","M","M","M","OFF","OFF","REST"], w4:["M","M","M","M","OFF","OFF","REST"], w5:["M","M","M","M"] },
+ { no:22, code:"ORI0125", name:"TENGKU SYAFIEDZAL EDZRY BIN TENGKU JESCEEDZAL", shift:"G",
+ w1:["M","M","OT(M)","OFF","REST"], w2:["M","M","M","M","OFF","OFF","REST"], w3:["M","M","M","M","OFF","OFF","REST"], w4:["M","M","M","M","OFF","OFF","REST"], w5:["M","M","M","M"] },
+ { no:23, code:"ORI0537", name:"ARVIND A/L TANGGAVELU", shift:"Normal",
+ w1:["M","M","M","OFF","REST"], w2:["M","M","M","M","M","OFF","REST"], w3:["M","M","M","M","M","OFF","REST"], w4:["M","M","M","M","M","OFF","REST"], w5:["M","M","M","M"] }
+ ];
+
+ const statusCodes = ['M', 'N', 'OT(M)', 'OT(N)', 'PH(M)', 'PH(N)', 'MC', 'NA', 'OFF', 'REST', 'COT', 'AL', '1st AL', '2nd AL', 'EL', '1st EL', '2nd EL'];
+
+ // Status color mapping for the status count table
+ const statusColors = {
+ 'M': '#70AD47',
+ 'N': '#A6A6A6',
+ 'OT(M)': '#D9D9D9',
+ 'OT(N)': '#E2EFDA',
+ 'PH(M)': '#C6E0B4',
+ 'PH(N)': '#C6E0B4',
+ 'MC': '#9DC3E6',
+ 'NA': '#000000',
+ 'OFF': '#1F4E79',
+ 'REST': '#FFF2CC',
+ 'COT': '#FFD966',
+ 'AL': '#F8CBAD',
+ '1st AL': '#F4CCCC',
+ '2nd AL': '#F4B6B6',
+ 'EL': '#FF0000',
+ '1st EL': '#FF0000',
+ '2nd EL': '#C00000'
+ };
+
+ // Filter state
+ let currentFilters = {
+ shift: '',
+ status: '',
+ search: '',
+ otRange: ''
+ };
+
+ let employeeRows = [];
+
+ // Helper functions
+ function plannedOT(arr) {
+ let cnt = arr.filter(v => v === 'OT(M)' || v === 'OT(N)' || v === 'COT').length;
+ return ((cnt / 4) * 100).toFixed(0) + '%';
+ }
+
+ function actualOT(arr) {
+ let cnt = arr.filter(v => v === 'OT(M)' || v === 'OT(N)').length;
+ return ((cnt / 4) * 100).toFixed(0) + '%';
+ }
+
+ // Update dropdown color based on value
+ function updateDropdownColor(selectDiv, value) {
+ selectDiv.setAttribute('data-value', value);
+ }
+
+ // Custom dropdown creator
+ function createCustomDropdown(selectedValue, onChange) {
+ const wrapper = document.createElement('div');
+ wrapper.className = 'custom-dropdown';
+ 
+ const selectDiv = document.createElement('div');
+ selectDiv.className = 'custom-dropdown-select';
+ selectDiv.textContent = selectedValue;
+ selectDiv.setAttribute('data-value', selectedValue);
+ 
+ const optionsDiv = document.createElement('div');
+ optionsDiv.className = 'custom-dropdown-options';
+ 
+ SHIFT_OPTIONS.forEach(opt => {
+ const option = document.createElement('div');
+ option.className = 'custom-dropdown-option' + (opt === selectedValue ? ' selected' : '');
+ option.textContent = opt;
+ option.setAttribute('data-value', opt);
+ option.addEventListener('click', (e) => {
+ e.stopPropagation();
+ selectDiv.textContent = opt;
+ updateDropdownColor(selectDiv, opt);
+ wrapper.classList.remove('open');
+ 
+ optionsDiv.querySelectorAll('.custom-dropdown-option').forEach(opt => {
+ opt.classList.remove('selected');
+ });
+ option.classList.add('selected');
+ 
+ if (onChange) onChange(opt);
+ recalcFormulas();
+ });
+ optionsDiv.appendChild(option);
+ });
+ 
+ selectDiv.addEventListener('click', (e) => {
+ e.stopPropagation();
+ document.querySelectorAll('.custom-dropdown.open').forEach(d => {
+ if (d !== wrapper) d.classList.remove('open');
+ });
+ wrapper.classList.toggle('open');
+ });
+ 
+ wrapper.appendChild(selectDiv);
+ wrapper.appendChild(optionsDiv);
+ 
+ document.addEventListener('click', () => {
+ wrapper.classList.remove('open');
+ });
+ 
+ return wrapper;
+ }
+
+ const tbody = document.getElementById('scheduleBody');
+
+ function renderEmployeeRows() {
+ tbody.innerHTML = '';
+ employeeRows = [];
+
+ employees.forEach((emp, index) => {
+ const tr = document.createElement('tr');
+ tr.dataset.employeeId = index;
+ tr.dataset.shift = emp.shift;
+ tr.dataset.name = emp.name.toLowerCase();
+ tr.dataset.code = emp.code.toLowerCase();
+
+ tr.innerHTML = `
+ <td>${emp.no}</td>
+ <td>${emp.code}</td>
+ <td style="text-align:left;">${emp.name}</td>
+ <td>${emp.shift}</td>
+ `;
+
+ const weeks = [emp.w1, emp.w2, emp.w3, emp.w4, emp.w5];
+
+ weeks.forEach((week) => {
+week.forEach(value => {
+ const td = document.createElement('td');
+ td.style.padding = '2px';
+ td.appendChild(createCustomDropdown(value));
+ tr.appendChild(td);
+ });
+
+ const planTd = document.createElement('td');
+ planTd.className = 'formula-cell';
+ const actTd = document.createElement('td');
+ actTd.className = 'formula-cell';
+
+ planTd.textContent = plannedOT(week);
+ actTd.textContent = actualOT(week);
+
+ tr.appendChild(planTd);
+ tr.appendChild(actTd);
+ });
+
+ tbody.appendChild(tr);
+ employeeRows.push(tr);
+ });
+ 
+ // Update scrollbar after rendering
+ setTimeout(updateScrollbarFromContainer, 100);
+ }
+
+ // Recalculate formulas and update all tables
+ function recalcFormulas() {
+ const rows = document.querySelectorAll('#scheduleBody tr');
+
+ rows.forEach(row => {
+ const dropdowns = row.querySelectorAll('.custom-dropdown-select');
+ const weeks = [[], [], [], [], []];
+ let selectIndex = 0;
+
+ [5, 7, 7, 7, 4].forEach((daysInWeek, weekNum) => {
+ for (let i = 0; i < daysInWeek; i++) {
+ if (dropdowns[selectIndex]) {
+ weeks[weekNum].push(dropdowns[selectIndex].textContent);
+ selectIndex++;
+ }
+ }
+ });
+
+ const formulaCells = row.querySelectorAll('.formula-cell');
+ let formulaIndex = 0;
+
+ weeks.forEach((week) => {
+ if (formulaCells[formulaIndex]) {
+ formulaCells[formulaIndex].textContent = plannedOT(week);
+ }
+ if (formulaCells[formulaIndex + 1]) {
+ formulaCells[formulaIndex + 1].textContent = actualOT(week);
+ }
+ formulaIndex += 2;
+ });
+ });
+
+ updateAverages();
+ updateStatusCounts();
+ updateQuickStats();
+ }
+
+ // Average row
+ function buildAverageRow() {
+ const avgRow = document.getElementById('averageRow');
+ let html = `<tr style="background:#e0ecf5; height:30px;">`;
+ html += `<td colspan="4" style="text-align:right; font-weight:bold;">Percentage OT Coverage</td>`;
+
+ [5, 7, 7, 7, 4].forEach((days, weekNum) => {
+ for (let i = 0; i < days; i++) html += `<td></td>`;
+ html += `<td class="avg-cell" id="avgPlan${weekNum}">0.00</td>`;
+ html += `<td class="avg-cell" id="avgAct${weekNum}">0.00</td>`;
+ });
+
+ html += `</tr>`;
+ avgRow.innerHTML = html;
+ }
+
+ function updateAverages() {
+ const visibleRows = Array.from(document.querySelectorAll('#scheduleBody tr')).filter(r => !r.classList.contains('row-hidden'));
+ const plans = [[], [], [], [], []];
+ const acts = [[], [], [], [], []];
+
+ visibleRows.forEach(row => {
+ const tds = row.querySelectorAll('td');
+ // Column indices: 4 fixed columns, then weeks with formula cells
+ // Week 1: 5 days + 2 formula (7 cols) -> formula at index 4+5=9, 10
+ // Week 2: 7 days + 2 formula (9 cols) -> formula at index 4+7+2=13? Let's track carefully
+ const weekStartIndices = [4, 11, 20, 29, 38];
+ const formulaOffset = [5, 7, 7, 7, 4];
+
+ for (let i = 0; i < 5; i++) {
+ const planIndex = weekStartIndices[i] + formulaOffset[i];
+ const actIndex = planIndex + 1;
+ const planVal = parseFloat((tds[planIndex]?.textContent || '0').replace('%','')) || 0;
+ const actVal = parseFloat((tds[actIndex]?.textContent || '0').replace('%','')) || 0;
+ plans[i].push(planVal);
+ acts[i].push(actVal);
+ }
+ });
+
+ for (let i = 0; i < 5; i++) {
+ const avgP = plans[i].length > 0 ? ((plans[i].reduce((a, b) => a + b, 0) / plans[i].length).toFixed(0) + '%') : '0.00';
+ const avgA = acts[i].length > 0 ? ((acts[i].reduce((a, b) => a + b, 0) / acts[i].length).toFixed(0) + '%') : '0.00';
+
+ const planEl = document.getElementById(`avgPlan${i}`);
+ const actEl = document.getElementById(`avgAct${i}`);
+ if (planEl) planEl.textContent = avgP;
+ if (actEl) actEl.textContent = avgA;
+ }
+ }
+
+ // Status section
+ function buildStatusSection() {
+ const sec = document.getElementById('statusSection');
+ let html = `<tr><td colspan="44" style="background:#b0c4de; height:4px;"></td></tr>`;
+ html += `<tr><td colspan="4"></td><td colspan="40" style="background:#d9e4f0; font-weight:bold; text-align:center;">STATUS COUNT (Daily - Based on Filtered View)</td></tr>`;
+
+ statusCodes.forEach(code => {
+ const bgColor = statusColors[code] || '#e1e9f2';
+ const textColor = ['#000000', '#1F4E79', '#FF0000', '#C00000'].includes(bgColor) || bgColor === '#70AD47' || bgColor === '#A6A6A6' ? 'white' : '#1e2b3c';
+ html += `<tr><td colspan="3"></td><td style="background:${bgColor}; color:${textColor}; font-weight:500;">${code}</td>`;
+
+ [5, 7, 7, 7, 4].forEach((days, weekNum) => {
+ for (let d = 0; d < days; d++) {
+ html += `<td id="stat_${code}_${weekNum}_${d}" style="background:#f8f9fa;">0</td>`;
+ }
+ html += `<td></td><td></td>`;
+ });
+ html += `</tr>`;
+ });
+
+ html += `<tr><td colspan="3"></td><td class="total-hc" style="background:#FCE4D6; color:#1e2b3c;">Total HC (M)</td>`;
+ [5, 7, 7, 7, 4].forEach((days, weekNum) => {
+ for (let d = 0; d < days; d++) {
+ html += `<td class="total-hc" id="hcM_${weekNum}_${d}">0</td>`;
+ }
+ html += `<td></td><td></td>`;
+ });
+ html += `</tr>`;
+
+ html += `<tr><td colspan="3"></td><td class="total-hc" style="background:#FCE4D6; color:#1e2b3c;">Total HC (N)</td>`;
+ [5, 7, 7, 7, 4].forEach((days, weekNum) => {
+ for (let d = 0; d < days; d++) {
+ html += `<td class="total-hc" id="hcN_${weekNum}_${d}">0</td>`;
+ }
+ html += `<td></td><td></td>`;
+ });
+ html += `</tr>`;
+
+ sec.innerHTML = html;
+ }
+
+ function updateStatusCounts() {
+ statusCodes.forEach(code => {
+ for (let w = 0; w < 5; w++) {
+ const days = [5, 7, 7, 7, 4][w];
+ for (let d = 0; d < days; d++) {
+ const el = document.getElementById(`stat_${code}_${w}_${d}`);
+ if (el) el.textContent = '0';
+ }
+ }
+ });
+
+ const visibleRows = Array.from(document.querySelectorAll('#scheduleBody tr')).filter(r => !r.classList.contains('row-hidden'));
+
+ visibleRows.forEach(row => {
+ const dropdowns = row.querySelectorAll('.custom-dropdown-select');
+ let selectIdx = 0;
+
+ [5, 7, 7, 7, 4].forEach((days, weekNum) => {
+ for (let d = 0; d < days; d++) {
+ if (dropdowns[selectIdx]) {
+ const value = dropdowns[selectIdx].textContent;
+ const counter = document.getElementById(`stat_${value}_${weekNum}_${d}`);
+ if (counter) {
+ counter.textContent = (parseInt(counter.textContent) || 0) + 1;
+ }
+ selectIdx++;
+ }
+ }
+ });
+ });
+
+ [5, 7, 7, 7, 4].forEach((days, weekNum) => {
+ for (let d = 0; d < days; d++) {
+ const mCount = (parseInt(document.getElementById(`stat_M_${weekNum}_${d}`)?.textContent) || 0) +
+ (parseInt(document.getElementById(`stat_OT(M)_${weekNum}_${d}`)?.textContent) || 0) +
+ (parseInt(document.getElementById(`stat_PH(M)_${weekNum}_${d}`)?.textContent) || 0);
+ const hcM = document.getElementById(`hcM_${weekNum}_${d}`);
+ if (hcM) hcM.textContent = mCount;
+
+ const nCount = (parseInt(document.getElementById(`stat_N_${weekNum}_${d}`)?.textContent) || 0) +
+ (parseInt(document.getElementById(`stat_OT(N)_${weekNum}_${d}`)?.textContent) || 0) +
+ (parseInt(document.getElementById(`stat_PH(N)_${weekNum}_${d}`)?.textContent) || 0);
+ const hcN = document.getElementById(`hcN_${weekNum}_${d}`);
+ if (hcN) hcN.textContent = nCount;
+ }
+ });
+ }
+
+ // Filter functions
+ function applyFilters() {
+ currentFilters.shift = document.getElementById('filterShift').value;
+ currentFilters.status = document.getElementById('filterStatus').value;
+ currentFilters.search = document.getElementById('searchEmployee').value.toLowerCase();
+ currentFilters.otRange = document.getElementById('filterOT').value;
+
+ let visibleCount = 0;
+
+ employeeRows.forEach(row => {
+ let visible = true;
+ const empData = employees[row.dataset.employeeId];
+
+ if (currentFilters.shift && empData.shift !== currentFilters.shift) visible = false;
+
+ if (currentFilters.search) {
+ if (!empData.name.toLowerCase().includes(currentFilters.search) &&
+ !empData.code.toLowerCase().includes(currentFilters.search)) {
+ visible = false;
+ }
+ }
+
+ if (currentFilters.status) {
+ const allWeeks = [...empData.w1, ...empData.w2, ...empData.w3, ...empData.w4, ...empData.w5];
+ if (!allWeeks.includes(currentFilters.status)) visible = false;
+ }
+
+ if (currentFilters.otRange) {
+ let hasHighOT = false;
+
+ [empData.w1, empData.w2, empData.w3, empData.w4, empData.w5].forEach(week => {
+ const weekOT = parseFloat(plannedOT(week)) || 0;
+ if (currentFilters.otRange === 'high' && weekOT > 50) hasHighOT = true;
+ else if (currentFilters.otRange === 'medium' && weekOT >= 25 && weekOT <= 50) hasHighOT = true;
+ else if (currentFilters.otRange === 'low' && weekOT > 0 && weekOT < 25) hasHighOT = true;
+ else if (currentFilters.otRange === 'zero' && weekOT === 0) hasHighOT = true;
+ });
+
+ if (!hasHighOT) visible = false;
+ }
+
+ if (visible) {
+row.classList.remove('row-hidden');
+ visibleCount++;
+ } else {
+row.classList.add('row-hidden');
+ }
+ });
+
+ updateFilterStats(visibleCount);
+ updateActiveFilters();
+ updateAverages();
+ updateStatusCounts();
+ updateQuickStats();
+ }
+
+ function updateFilterStats(visibleCount) {
+ const totalCount = employeeRows.length;
+ const statsText = visibleCount === totalCount ?
+ `Showing all ${totalCount} employees` :
+ `Showing ${visibleCount} of ${totalCount} employees`;
+ document.getElementById('filterStats').textContent = statsText;
+ document.getElementById('rowCount').textContent = `${visibleCount} Employees`;
+ }
+
+ function updateActiveFilters() {
+ const activeDiv = document.getElementById('activeFilters');
+ const filters = [];
+
+ if (currentFilters.shift) filters.push(`Shift: ${currentFilters.shift}`);
+ if (currentFilters.status) filters.push(`Status: ${currentFilters.status}`);
+ if (currentFilters.search) filters.push(`Search: "${currentFilters.search}"`);
+ if (currentFilters.otRange) {
+ const otLabels = {high:'>50%', medium:'25-50%', low:'<25%', zero:'0%'};
+ filters.push(`OT: ${otLabels[currentFilters.otRange]}`);
+ }
+
+ if (filters.length === 0) {
+ activeDiv.innerHTML = '<span style="color:#999; font-size:12px;">No active filters</span>';
+ } else {
+ activeDiv.innerHTML = filters.map(f =>
+ `<span class="filter-tag">${f} <button onclick="removeFilter('${f.split(':')[0]}')">✕</button></span>`
+ ).join('');
+ }
+ }
+
+ function updateQuickStats() {
+ const visibleRows = employeeRows.filter(r => !r.classList.contains('row-hidden'));
+ let totalOT = 0;
+ let activeCount = 0;
+
+ visibleRows.forEach(row => {
+ const dropdowns = row.querySelectorAll('.custom-dropdown-select');
+ const values = Array.from(dropdowns).map(d => d.textContent);
+ totalOT += parseFloat(plannedOT(values)) || 0;
+ if (!values.some(v => ['AL', 'MC', 'EL'].includes(v))) activeCount++;
+ });
+
+ const avgOT = visibleRows.length > 0 ? (totalOT / visibleRows.length).toFixed(1) : 0;
+ document.getElementById('quickStats').textContent =
+ `📈 Avg OT: ${avgOT}% | 👥 Active: ${activeCount}/${visibleRows.length}`;
+ }
+
+ function clearAllFilters() {
+ document.getElementById('filterShift').value = '';
+ document.getElementById('filterStatus').value = '';
+ document.getElementById('searchEmployee').value = '';
+ document.getElementById('filterOT').value = '';
+ currentFilters = { shift: '', status: '', search: '', otRange: '' };
+ applyFilters();
+ }
+
+ function removeFilter(filterType) {
+ const map = { 'Shift': 'filterShift', 'Status': 'filterStatus', 'Search': 'searchEmployee', 'OT': 'filterOT' };
+ const elementId = map[filterType];
+ if (elementId) {
+ document.getElementById(elementId).value = '';
+ applyFilters();
+ }
+ }
+
+ function quickFilter(type) {
+ clearAllFilters();
+
+ switch(type) {
+ case 'active':
+ employeeRows.forEach(row => {
+ const dropdowns = row.querySelectorAll('.custom-dropdown-select');
+ const values = Array.from(dropdowns).map(d => d.textContent);
+ if (values.some(v => ['AL', 'MC', 'EL'].includes(v))) {
+row.classList.add('row-hidden');
+ } else {
+row.classList.remove('row-hidden');
+ }
+ });
+ break;
+
+ case 'onLeave':
+ employeeRows.forEach(row => {
+ const dropdowns = row.querySelectorAll('.custom-dropdown-select');
+ const values = Array.from(dropdowns).map(d => d.textContent);
+ if (values.some(v => ['AL', 'MC', 'EL'].includes(v))) {
+row.classList.remove('row-hidden');
+ } else {
+row.classList.add('row-hidden');
+ }
+ });
+ break;
+
+ case 'nightShift':
+ currentFilters.shift = 'B';
+ document.getElementById('filterShift').value = 'B';
+ applyFilters();
+ return;
+
+ case 'morningShift':
+ currentFilters.shift = 'A';
+ document.getElementById('filterShift').value = 'A';
+ applyFilters();
+ return;
+
+ case 'hasOT':
+ employeeRows.forEach(row => {
+ const dropdowns = row.querySelectorAll('.custom-dropdown-select');
+ const values = Array.from(dropdowns).map(d => d.textContent);
+ if (values.some(v => v.includes('OT'))) {
+row.classList.remove('row-hidden');
+ } else {
+row.classList.add('row-hidden');
+ }
+ });
+ break;
+ }
+
+ const visibleCount = employeeRows.filter(r => !r.classList.contains('row-hidden')).length;
+ updateFilterStats(visibleCount);
+ updateAverages();
+ updateStatusCounts();
+ updateQuickStats();
+ }
+
+ function toggleAllRows(show) {
+ employeeRows.forEach(row => {
+ if (show) {
+row.classList.remove('row-hidden');
+ } else {
+row.classList.add('row-hidden');
+ }
+ });
+ const visibleCount = show ? employeeRows.length : 0;
+ updateFilterStats(visibleCount);
+ updateAverages();
+ updateStatusCounts();
+ updateQuickStats();
+ }
+
+ function exportFilteredData() {
+ const visibleRows = employeeRows.filter(r => !r.classList.contains('row-hidden'));
+ const currentMonthYear = document.getElementById('mainTitle').textContent;
+ 
+ const styles = document.querySelector('style').innerHTML;
+ 
+ let excelHTML = `<!DOCTYPE html>
+ <html>
+ <head>
+ <meta charset="UTF-8">
+ <title>Shift Schedule Export - ${currentMonthYear}</title>
+ <style>
+ * { box-sizing: border-box; }
+ body { font-family: 'Segoe UI', 'Arial', sans-serif; background: white; margin: 20px; color: #1e2b3c; }
+ ${styles}
+ table { border-collapse: collapse; min-width: 3200px; background: white; font-size: 11px; }
+ th, td { border: 1px solid #b0c4de; padding: 5px 4px; text-align: center; white-space: nowrap; }
+ th { background: #1e3a5f; color: white; font-weight: 600; }
+ .week-header { background: #3c6e9c; }
+ .day-header { background: #4a7eb3; }
+ .formula-cell { background: #fcf8e7 !important; }
+ .avg-cell { background: #e6f2e6 !important; }
+ .total-hc { background: #cbdde9 !important; }
+ .custom-dropdown { display: inline-block; width: 70px; }
+ .custom-dropdown-select { width: 100%; padding: 3px 4px; border: 1px solid #9ab3d0; font-size: 11px; text-align: center; }
+ .custom-dropdown-options { display: none !important; }
+ .header-info { margin-bottom: 20px; padding: 10px; background: #f4f7fc; border-radius: 8px; }
+ </style>
+ </head>
+ <body>
+ <div class="header-info"><strong>${currentMonthYear}</strong> | Exported: ${new Date().toLocaleString()} | Employees: ${visibleRows.length}</div>
+ <table><thead>`;
+ 
+ excelHTML += `<tr><th colspan="4"></th><th colspan="40" style="background:#1e3a5f;">${currentMonthYear}</th></tr>`;
+ 
+ // Week headers - only over day columns
+ excelHTML += `<tr><th colspan="4"></th>`;
+ excelHTML += `<th colspan="5" class="week-header">${document.getElementById('week14Header')?.textContent || 'WW14'}</th><th colspan="2"></th>`;
+ excelHTML += `<th colspan="7" class="week-header">${document.getElementById('week15Header')?.textContent || 'WW15'}</th><th colspan="2"></th>`;
+ excelHTML += `<th colspan="7" class="week-header">${document.getElementById('week16Header')?.textContent || 'WW16'}</th><th colspan="2"></th>`;
+ excelHTML += `<th colspan="7" class="week-header">${document.getElementById('week17Header')?.textContent || 'WW17'}</th><th colspan="2"></th>`;
+ excelHTML += `<th colspan="4" class="week-header">${document.getElementById('week18Header')?.textContent || 'WW18'}</th><th colspan="2"></th>`;
+ excelHTML += `</tr>`;
+ 
+ // Day headers
+ excelHTML += `<tr><th colspan="4"></th>`;
+ for (let i = 1; i <= 30; i++) {
+ const el = document.getElementById(`d${i}`);
+ excelHTML += `<th class="day-header">${el?.textContent || i}</th>`;
+ if (i === 5 || i === 12 || i === 19 || i === 26) excelHTML += `<th>Plan%</th><th>Act%</th>`;
+ }
+ excelHTML += `<th>Plan%</th><th>Act%</th></tr>`;
+ 
+ // Column labels
+ excelHTML += `<tr><th>No.</th><th>Code</th><th>Name</th><th>Shift</th>`;
+ for (let i = 1; i <= 30; i++) {
+ excelHTML += `<th>${i}</th>`;
+ if (i === 5 || i === 12 || i === 19 || i === 26) excelHTML += `<th>Plan%</th><th>Act%</th>`;
+ }
+ excelHTML += `<th>Plan%</th><th>Act%</th></tr></thead><tbody>`;
+ 
+ visibleRows.forEach(row => {
+ const clone = row.cloneNode(true);
+ clone.querySelectorAll('.custom-dropdown').forEach(dd => {
+ const select = dd.querySelector('.custom-dropdown-select');
+ if (select) {
+ const div = document.createElement('div');
+ div.className = 'custom-dropdown-select';
+ div.textContent = select.textContent;
+ div.setAttribute('data-value', select.getAttribute('data-value'));
+ dd.parentNode.replaceChild(div, dd);
+ }
+ });
+ excelHTML += clone.outerHTML;
+ });
+ 
+ excelHTML += `</tbody></table></body></html>`;
+ 
+ const blob = new Blob([excelHTML], { type: 'application/vnd.ms-excel' });
+ const a = document.createElement('a');
+ a.href = URL.createObjectURL(blob);
+ a.download = `Shift_Schedule_${currentMonthYear.replace(/[^a-zA-Z0-9]/g, '_')}.xls`;
+ a.click();
+ URL.revokeObjectURL(a.href);
+ }
+
+ // Initialize
+ renderEmployeeRows();
+ buildAverageRow();
+ buildStatusSection();
+
+ setTimeout(() => {
+ recalcFormulas();
+ updateQuickStats();
+ updateScrollbarFromContainer();
+ }, 50);
+
+ // Make functions globally available
+ window.applyFilters = applyFilters;
+ window.clearAllFilters = clearAllFilters;
+ window.removeFilter = removeFilter;
+ window.quickFilter = quickFilter;
+ window.toggleAllRows = toggleAllRows;
+ window.exportFilteredData = exportFilteredData;
+ window.recalcFormulas = recalcFormulas;
+
+ })();
+</script>
+</body>
+</html>
