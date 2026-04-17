@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>AMS Admin Dashboard</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- GLOBAL SIDEBAR CSS -->
+  <link rel="stylesheet" href="sidebar.css">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, sans-serif; }
+
+    body { background: #f4f6fb; overflow: hidden; color: #000; transition: background 0.5s ease, color 0.5s ease; }
+
+    /* Smooth transitions for UI */
+    .topbar, .sidebar, .card, .calendar, .chart-box, .search {
+      transition: all 0.4s ease;
+    }
+
+    .theme-btn {
+      cursor: pointer;
+      font-size: 18px;
+      transition: transform 0.4s ease;
+    }
+
+    /* Theme animation */
+    @keyframes fadeZoom {
+      from { opacity: 0.6; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    body.theme-anim {
+      animation: fadeZoom 0.4s ease;
+    }
+    body.dark { background: #1e272e; color: #f1f1f1; }
+
+    body.dark .topbar { background: #2f3640; }
+    body.dark .sidebar { background: #020617; }
+    body.dark .card { opacity: 0.95; }
+
+    body.dark .calendar,
+    body.dark .chart-box { background: #2f3640; color: #fff; }
+
+    body.dark .calendar-grid div { color: #ddd; }
+    body.dark .calendar-grid div:hover { background: #57606f; }
+
+    body.dark .search { background: #2f3640; color: white; border: 1px solid #555; }
+
+    .topbar {
+      height: 60px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .left-top { display: flex; align-items: center; gap: 15px; }
+    .menu-btn { font-size: 22px; cursor: pointer; }
+
+    .search {
+      padding: 6px 10px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      width: 200px;
+    }
+
+    .right-top { display: flex; align-items: center; gap: 15px; }
+    .theme-btn { cursor: pointer; font-size: 18px; }
+
+    .content { padding: 15px 25px; height: calc(100vh - 60px); }
+    .header { margin-bottom: 20px; }
+
+    .header h2, .header p {
+      transition: color 0.4s ease;
+    }
+
+    body.dark .header h2,
+    body.dark .header p {
+      color: #ffffff;
+    }
+
+    .dashboard { display: flex; gap: 20px; }
+    .left-side { flex: 2; }
+
+    .right-side {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: -10px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .card { color: white; padding: 20px; border-radius: 10px; }
+    .card.total { background: linear-gradient(135deg, #6c5ce7, #5f27cd); }
+    .card.present { background: linear-gradient(135deg, #00b894, #00cec9); }
+    .card.absent { background: linear-gradient(135deg, #ff7675, #d63031); }
+
+    .chart-box {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      height: 260px;
+    }
+
+    .chart-box canvas {
+      width: 200px !important;
+      height: 200px !important;
+      display: block;
+      margin: auto;
+    }
+
+    .calendar {
+      background: white;
+      padding: 8px;
+      border-radius: 10px;
+      width: 100%;
+    }
+
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; }
+    .calendar-header h4 { font-size: 14px; }
+
+    .calendar-header button {
+      background: #5a67d8;
+      color: white;
+      border: none;
+      padding: 3px 6px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+      text-align: center;
+      font-size: 11px;
+    }
+
+    .calendar-grid div {
+      padding: 6px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .today { background: #5a67d8; color: white; }
+
+    /* Employee list theme support */
+    #employeeList li {
+      color: #000;
+      transition: all 0.4s ease;
+    }
+
+    #employeeList li div {
+      transition: color 0.4s ease;
+    }
+
+    body.dark #employeeList li {
+      background: #2f3640 !important;
+      color: #ffffff;
+    }
+
+    body.dark #employeeList li div {
+      color: #ffffff !important;
+    }
+
+    body.dark #employeeList li div[style*="color:gray"] {
+      color: #bbb !important;
+    }
+    
+    #employeeList li {
+  font-size: 13px;
+}
+  </style>
+</head>
+
+<body>
+
+<div class="sidebar" id="sidebar">
+  <h2>AMS</h2>
+  <a href="admin.html" class="active">Dashboard</a>
+  <a href="attendance.html">Attendance</a>
+  <a href="employees.html">Employees</a> 
+  <a href="#">Reports</a>
+  <a href="#" class="logout" onclick="logout()">Logout</a>
+</div>
+
+<div class="main" id="main">
+
+  <div class="topbar">
+    <div class="left-top">
+      <span class="menu-btn" onclick="toggleSidebar()">☰</span>
+      <input class="search" placeholder="Search...">
+    </div>
+
+    <div class="right-top">
+      <div class="theme-btn" onclick="toggleTheme()">🌙</div>
+      <div style="width:30px;height:30px;background:#5a67d8;border-radius:50%;"></div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="header">
+      <h2>Dashboard</h2>
+      <p>Welcome to Attendance Management System</p>
+    </div>
+
+    <div class="dashboard">
+      <div class="left-side">
+        <div class="cards">
+          <div class="card total">
+            <h4>TOTAL EMPLOYEES</h4>
+            <h1 id="totalEmp">0</h1>
+          </div>
+
+          <div class="card present">
+            <h4>PRESENT</h4>
+            <h1 id="presentCount">0</h1>
+          </div>
+
+          <div class="card absent">
+            <h4>ABSENT</h4>
+            <h1 id="absentCount">0</h1>
+          </div>
+        </div>
+
+        <!-- EMPLOYEE LIST -->
+        <div class="chart-box" style="margin-top:20px;height:auto;text-align:left;border:1px solid #dcdfe6;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h3>Employees</h3>
+            <input id="employeeSearch" class="search" placeholder="Search employees..." style="width:180px;">
+          </div>
+          <ul id="employeeList" style="list-style:none;padding:0;margin-top:10px;max-height:320px;overflow-y:auto;"></ul>
+        </div>
+
+      </div>
+
+      <div class="right-side">
+
+        <div class="calendar">
+          <div class="calendar-header">
+            <button onclick="changeMonth(-1)">◀</button>
+            <h4 id="monthYear"></h4>
+            <button onclick="changeMonth(1)">▶</button>
+          </div>
+          <div class="calendar-grid" id="calendar"></div>
+        </div>
+
+        <div class="chart-box">
+          <h3>Attendance Overview</h3>
+          <canvas id="pieChart"></canvas>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let chart;
+let currentDate = new Date();
+
+function toggleTheme() {
+  const btn = document.querySelector('.theme-btn');
+
+  document.body.classList.add("theme-anim");
+  document.body.classList.toggle("dark");
+
+  // rotate icon for effect
+  btn.style.transform = "rotate(180deg) scale(1.2)";
+
+  setTimeout(() => {
+    document.body.classList.remove("theme-anim");
+    btn.style.transform = "rotate(0deg) scale(1)";
+  }, 400);
+
+  localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+}
+
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+}
+
+function loadCalendar() {
+  const calendar = document.getElementById("calendar");
+  const monthYear = document.getElementById("monthYear");
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const today = new Date().toISOString().split("T")[0];
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  monthYear.innerText = `${months[month]} ${year}`;
+
+  calendar.innerHTML = "";
+
+  ["Mo","Tu","We","Th","Fr","Sa","Su"].forEach(d => {
+    calendar.innerHTML += `<div><strong>${d}</strong></div>`;
+  });
+
+  for (let i = 0; i < firstDay; i++) {
+    calendar.innerHTML += `<div></div>`;
+  }
+
+  for (let i = 1; i <= daysInMonth; i++) {
+    const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+    let isToday = today === dateKey;
+
+    calendar.innerHTML += `
+      <div class="${isToday ? 'today' : ''}">
+        ${i}
+      </div>`;
+  }
+}
+
+function changeMonth(step){
+  currentDate.setMonth(currentDate.getMonth()+step);
+  loadCalendar();
+}
+
+// GLOBAL EMPLOYEE DATA
+const employees = [
+  {code:"ORI0036", name:"MUHAMMAD SHAHRUL IZHAM BIN RUSLAN", shift:"A"},
+  {code:"ORI0484", name:"DINESH A/L RAVINDRAN", shift:"A"},
+  {code:"ORI0394", name:"MOHAMAD LUKMAN BIN HAMZAH", shift:"A"},
+  {code:"ORI0543", name:"MOHD HAMIZAN BIN FADZIL", shift:"A"},
+  {code:"ORI0327", name:"MUHAMMAD ALIF AZIZ BIN MUZER", shift:"A"},
+  {code:"ORI0220", name:"AMIR SHARIFFUDIN BIN JAMALUDIN", shift:"A"},
+  {code:"ORI0537", name:"ABD SYUKOR BIN CASSIM", shift:"A"},
+  {code:"ORI0037", name:"MOHAMAD FARIS IKHWAN BIN MOHD FADLI", shift:"B"},
+  {code:"ORI0406", name:"MUHAMAD HAMIRUL HAKIM BIN HAMZAH", shift:"B"},
+  {code:"ORI0351", name:"MOHAMAD ZULHILMI BIN MOHD SOBRI", shift:"B"},
+  {code:"ORI0246", name:"MOHAMAD NAZMI BIN MOHD MANSHOR", shift:"B"},
+  {code:"ORI0405", name:"MUHAMMAD NAIM BIN IBRAHIM", shift:"B"},
+  {code:"ORI0377", name:"MUHAMMAD IRFAN FAUZAN BIN AKHMAD AZNAN", shift:"B"},
+  {code:"ORI0361", name:"MUHAMMAD AMIR BIN AZHAR", shift:"B"},
+  {code:"ORI0483", name:"VIGNASH PALANESAMY", shift:"B"},
+  {code:"ORI0240", name:"PRADEEPPARAJ A/L MUNIANDY", shift:"G"},
+  {code:"ORI0500", name:"NURSYAFIKA BINTI MOHD NAPIS", shift:"G"},
+  {code:"ORI0393", name:"AHMAD SUHAIB BIN AHMAD ZUDI", shift:"G"},
+  {code:"ORI0170", name:"MUHAMMAD NASIRUDIN BIN TAJUDIN", shift:"G"},
+  {code:"ORI0275", name:"MUHAMAD ZULFAQAR BIN YUSOFF", shift:"G"},
+  {code:"ORI0125", name:"TENGKU SYAFIEDZAL EDZRY BIN TENGKU JESCEEDZAL", shift:"G"},
+  {code:"ORI0537", name:"ARVIND A/L TANGGAVELU", shift:"Normal"}
+];
+
+const list = document.getElementById("employeeList");
+const searchInput = document.getElementById("employeeSearch");
+
+function renderList(filter = "") {
+  list.innerHTML = `
+    <li style="display:grid;grid-template-columns:50px 150px 1fr 100px;font-weight:bold;padding:10px;background:#dfe4ea;border-radius:8px;margin-bottom:8px;">
+      <div>No</div>
+      <div>Code</div>
+      <div>Name</div>
+      <div>Shift</div>
+    </li>
+  `;
+
+  const f = filter.trim().toLowerCase();
+
+  employees
+    .filter(emp => emp.code.toLowerCase() === f || emp.name.toLowerCase().includes(f) || f === "")
+    .forEach((emp, index) => {
+      list.innerHTML += `
+        <li style="display:grid;grid-template-columns:50px 150px 1fr 100px;padding:10px;margin-bottom:6px;background:#eef1f5;border-radius:8px;">
+          <div>${index + 1}</div>
+          <div>${emp.code}</div>
+          <div>${emp.name}</div>
+          <div>${emp.shift}</div>
+        </li>
+      `;
+    });
+}
+
+if (searchInput) {
+  searchInput.addEventListener("input", (e) => {
+    renderList(e.target.value);
+  });
+}
+
+function loadDashboard() {
+  let attendance = JSON.parse(localStorage.getItem("attendance")) || [];
+
+  let today = new Date().toISOString().split("T")[0];
+  let todayData = attendance.filter(r => r.date === today);
+
+  let present = todayData.filter(r => r.status === "Present" || r.status === "Late").length;
+  let absent = todayData.filter(r => r.status === "Absent").length;
+
+  // FIX: total employees based on list
+  document.getElementById("totalEmp").innerText = employees.length;
+  document.getElementById("presentCount").innerText = present;
+  document.getElementById("absentCount").innerText = absent;
+
+  renderList(searchInput ? searchInput.value : "");
+
+  updateChart(present, absent);
+}
+
+function updateChart(present, absent) {
+  let ctx = document.getElementById("pieChart");
+
+  if (!chart) {
+    chart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ["Present", "Absent"],
+        datasets: [{
+          data: [present, absent],
+          backgroundColor: ['#00b894', '#d63031']
+        }]
+      },
+      options: { responsive: false }
+    });
+  } else {
+    chart.data.datasets[0].data = [present, absent];
+    chart.update();
+  }
+}
+
+function toggleSidebar(){
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("main").classList.toggle("shift");
+}
+
+function logout(){ window.location.href="index.html"; }
+
+const links = document.querySelectorAll(".sidebar a");
+const current = window.location.pathname.split("/").pop();
+links.forEach(link => {
+  if (link.getAttribute("href") === current) {
+    link.classList.add("active");
+  }
+});
+
+loadCalendar();
+loadDashboard();
+setInterval(loadDashboard,2000);
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Leave Request Dashboard</title>
+
+<style>
+body {
+ font-family: Arial, sans-serif;
+ background: #f4f7fc;
+ margin: 0;
+}
+
+.container {
+ padding: 20px;
+}
+
+h2 {
+ color: #1e3a5f;
+}
+
+.form-box {
+ background: white;
+ padding: 20px;
+ border-radius: 10px;
+ margin-bottom: 20px;
+ box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+input, select {
+ padding: 8px;
+ margin: 5px 0;
+ width: 100%;
+}
+
+button {
+ padding: 10px;
+ background: #1e3a5f;
+ color: white;
+ border: none;
+ cursor: pointer;
+ border-radius: 5px;
+}
+
+button:hover {
+ background: #143048;
+}
+
+.table-box {
+ background: white;
+ padding: 20px;
+ border-radius: 10px;
+ box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+table {
+ width: 100%;
+ border-collapse: collapse;
+}
+
+th, td {
+ border: 1px solid #ccc;
+ padding: 8px;
+ text-align: center;
+}
+
+th {
+ background: #1e3a5f;
+ color: white;
+}
+
+.status-pending { color: orange; }
+.status-approved { color: green; }
+.status-rejected { color: red; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>📋 Leave Request Dashboard</h2>
+
+<div class="form-box">
+<h3>Request Leave</h3>
+<input type="text" id="empName" placeholder="Employee Name">
+<input type="date" id="startDate">
+<input type="date" id="endDate">
+<select id="leaveType">
+<option>Annual Leave</option>
+<option>Medical Leave</option>
+<option>Emergency Leave</option>
+</select>
+<button onclick="addRequest()">Submit Request</button>
+</div>
+
+<div class="table-box">
+<h3>All Requests</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Start</th>
+<th>End</th>
+<th>Type</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="requestTable"></tbody>
+</table>
+</div>
+
+</div>
+
+<script>
+let requests = [];
+
+function addRequest() {
+ const name = document.getElementById('empName').value;
+ const start = document.getElementById('startDate').value;
+ const end = document.getElementById('endDate').value;
+ const type = document.getElementById('leaveType').value;
+
+ if (!name || !start || !end) {
+ alert('Fill all fields');
+ return;
+ }
+
+ requests.push({ name, start, end, type, status: 'Pending' });
+ renderTable();
+}
+
+function renderTable() {
+ const table = document.getElementById('requestTable');
+ table.innerHTML = '';
+
+ requests.forEach((req, index) => {
+ const tr = document.createElement('tr');
+
+ tr.innerHTML = `
+ <td>${req.name}</td>
+ <td>${req.start}</td>
+ <td>${req.end}</td>
+ <td>${req.type}</td>
+ <td class="status-${req.status.toLowerCase()}">${req.status}</td>
+ <td>
+ <button onclick="approve(${index})">✔</button>
+ <button onclick="reject(${index})">✖</button>
+ </td>
+ `;
+
+ table.appendChild(tr);
+ });
+}
+
+function approve(index) {
+ requests[index].status = 'Approved';
+ renderTable();
+}
+
+function reject(index) {
+ requests[index].status = 'Rejected';
+ renderTable();
+}
+</script>
+
+</body>
+</html>
