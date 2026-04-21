@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>AMS Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+    
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #505ba8, hsl(263, 88%, 16%));
+    }
+
+    .container {
+      display: flex;
+      width: 800px;
+      height: 450px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .left {
+      flex: 1;
+      background: linear-gradient(135deg, #5a67d8, #6b46c1);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
+
+    .left h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .left p {
+      font-size: 14px;
+      opacity: 0.9;
+      text-align: center;
+    }
+
+    .right {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .right h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .input-group input:focus {
+      border-color: #5a67d8;
+      outline: none;
+    }
+
+    .toggle {
+      position: absolute;
+      right: 10px;
+      top: 12px;
+      cursor: pointer;
+      font-size: 12px;
+      color: gray;
+    }
+
+    button {
+      padding: 12px;
+      background: #5a67d8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #434190;
+    }
+
+    .error {
+      color: red;
+      font-size: 13px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: gray;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="left">
+    <h1>AMS</h1>
+    <p>
+      Attendance Management System<br>
+      Manage shift reports and CTQ tracking efficiently
+    </p>
+  </div>
+
+  <div class="right">
+    <h2>Login</h2>
+
+    <div class="input-group">
+      <input id="user" placeholder="User ID" onkeypress="handleEnter(event)">
+    </div>
+
+    <div class="input-group">
+      <input id="pass" type="password" placeholder="Password" onkeypress="handleEnter(event)">
+      <span class="toggle" onclick="togglePassword()">Show</span>
+    </div>
+
+    <button id="loginBtn" onclick="login()">Login</button>
+
+    <div class="error" id="error"></div>
+
+    <div class="footer">
+      © 2026 AMS System
+    </div>
+  </div>
+
+</div>
+
+<script>
+// 🔥 FIX 1: Reset button when page comes from browser cache (back button)
+window.addEventListener("pageshow", function () {
+  const btn = document.getElementById("loginBtn");
+  btn.innerText = "Login";
+  btn.disabled = false;
+});
+
+// Toggle password
+function togglePassword() {
+  const pass = document.getElementById("pass");
+  const toggle = document.querySelector(".toggle");
+
+  if (pass.type === "password") {
+    pass.type = "text";
+    toggle.innerText = "Hide";
+  } else {
+    pass.type = "password";
+    toggle.innerText = "Show";
+  }
+}
+
+// Enter key login
+function handleEnter(e) {
+  if (e.key === "Enter") login();
+}
+
+// Login function
+function login() {
+  const user = document.getElementById("user").value.trim();
+  const pass = document.getElementById("pass").value.trim();
+  const error = document.getElementById("error");
+  const btn = document.getElementById("loginBtn");
+
+  error.innerText = "";
+
+  if (user === "" || pass === "") {
+    error.innerText = "Please fill in all fields";
+    return;
+  }
+
+  btn.innerText = "Logging in...";
+  btn.disabled = true;
+
+  setTimeout(() => {
+    if (user === "001" && pass === "001") {
+      // 🔥 FIX 2: Prevent going back to login page
+      window.location.replace("admin.html");
+    } 
+    else if (user === "000" && pass === "000") {
+      window.location.replace("technician.html");
+    } 
+    else {
+      error.innerText = "Invalid credentials";
+      btn.innerText = "Login";
+      btn.disabled = false;
+    }
+  }, 800);
+}
+</script>
+
+</body>
+</html>
